@@ -1,0 +1,17 @@
+name: aaf_rapid_connect
+description: Australian Access Federation Rapid Connect Service Provider (SP)
+version: 1.0.0
+homepage: https://github.com/qcif/aaf_rapid_connect
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  jaguar_jwt: ^3.0.0
+  logging: ^1.0.2
+
+dev_dependencies:
+  coverage: ^1.5.0
+  lints: ^2.0.0
+  test: ^1.6.3
+  woomera: ^7.0.0  # used in the example
