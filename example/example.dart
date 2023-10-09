@@ -1,9 +1,9 @@
 // Example
 
 import 'dart:io';
-import 'package:woomera/woomera.dart';
 
 import 'package:aaf_rapid_connect/aaf_rapid_connect.dart';
+import 'package:woomera/woomera.dart';
 
 //################################################################
 // Constants
@@ -41,14 +41,14 @@ const redirectUrl2 =
 ServiceProvider sp = sp = ServiceProvider(issuer, audience, secret,
     name: name,
     redirectUrl: redirectUrl,
-    allowedClockSkew: Duration(minutes: 2));
+    allowedClockSkew: const Duration(minutes: 2));
 
 // 2. Redirect the browser to the redirect URL, when requiring authentication.
 
-Future<Response> handleLoginPage(Request req) async {
-  return ResponseBuffered(ContentType.html)
-    ..status = HttpStatus.ok
-    ..write('''
+Future<Response> handleLoginPage(Request req) async =>
+    ResponseBuffered(ContentType.html)
+      ..status = HttpStatus.ok
+      ..write('''
 <html lang="en">
   <head>
     <title>Example Service Provider</title>
@@ -60,19 +60,18 @@ Future<Response> handleLoginPage(Request req) async {
   </body>
 </html>
 ''');
-}
 
 // 3. Handle the the "assertion" parameter in the callback HTTP POST request.
 
 Future<Response> handleAafCallback(Request req) async {
-  var assertion = req.postParams!['assertion'];
-  print('Assertion: $assertion');
+  final assertion = req.postParams!['assertion'];
+  stdout.writeln('Assertion: $assertion');
 
   try {
     final attrs = ClaimStandard(sp.authenticate(assertion));
     return _successful(attrs);
   } on AafException catch (e) {
-    print('Assertion rejected: $e'); // For more details use logging.
+    stdout.writeln('Assertion rejected: $e'); // For more details use logging.
 
     // For security, do not reveal to client why it failed.
     return _failed('Assertion was not valid.');
@@ -105,10 +104,9 @@ Response _successful(ClaimStandard attr) {
   return resp;
 }
 
-Response _failed(String message) {
-  return ResponseBuffered(ContentType.html)
-    ..status = HttpStatus.badRequest
-    ..write('''
+Response _failed(String message) => ResponseBuffered(ContentType.html)
+  ..status = HttpStatus.badRequest
+  ..write('''
 <html lang="en">
 <head><title>Failed</title></head>
 <body>
@@ -118,7 +116,6 @@ Response _failed(String message) {
 </body>
 </html>
 ''');
-}
 
 //################################################################
 
@@ -131,7 +128,7 @@ void main() async {
     ..get('~/', handleLoginPage)
     ..post('~/auth/aaf', handleAafCallback);
 
-  print('Listening on ${server.bindAddress} port ${server.bindPort}');
+  stdout.writeln('Listening on ${server.bindAddress} port ${server.bindPort}');
 
   await server.run();
 }

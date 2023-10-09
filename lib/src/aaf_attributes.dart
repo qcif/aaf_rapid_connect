@@ -7,6 +7,8 @@ class Claim {
   //================================================================
   // Constructors
 
+  /// Constructor for a claim set.
+
   Claim(this.attributes);
 
   //================================================================
@@ -34,6 +36,8 @@ class Claim {
 class ClaimStandard extends Claim {
   //================================================================
   // Constructors
+
+  /// Constructor for a standard AAF Rapid Connect claim set.
 
   ClaimStandard(Map<String, String> m) : super(m);
 
@@ -149,6 +153,8 @@ class ClaimStandard extends Claim {
 class ClaimWithSharedToken extends ClaimStandard {
   //================================================================
   // Constructors
+
+  /// Constructor for a standard AAF Rapid Connect claim set plus shared token.
 
   ClaimWithSharedToken(Map<String, String> m) : super(m);
 

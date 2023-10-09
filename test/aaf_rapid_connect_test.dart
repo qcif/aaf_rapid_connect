@@ -114,7 +114,7 @@ void nbfSameAsIss() {
 
         final c = ClaimWithSharedToken(attrs);
 
-        // Shared token is a part of the profile, so there are no extra attributes.
+        // Shared token is a part of profile, so there are no extra attributes.
 
         expect(c.extra.isEmpty, isTrue); // all attributes are known
 
@@ -151,20 +151,20 @@ void nbfSameAsIss() {
 
     test('clock skew is not allowed', () {
       // Note: iat, exp, nbf only have the resolution of 1 second.
-      sp.allowedClockSkew = Duration();
+      sp.allowedClockSkew = Duration.zero;
 
       final samples = {
-        Duration(days: -1): 'JWT token not yet accepted!',
-        Duration(hours: -1): 'JWT token not yet accepted!',
-        Duration(seconds: -1): 'JWT token not yet accepted!',
-        Duration(): null, // valid if immediately received
-        Duration(seconds: 1): null, // still valid
-        Duration(seconds: 60): null, // still valid
-        Duration(seconds: 119): null, // still valid for up to 2 minutes
-        Duration(seconds: 120): 'JWT token expired!',
-        Duration(seconds: 121): 'JWT token expired!',
-        Duration(hours: 1): 'JWT token expired!',
-        Duration(days: 1, microseconds: 100): 'JWT token expired!',
+        const Duration(days: -1): 'JWT token not yet accepted!',
+        const Duration(hours: -1): 'JWT token not yet accepted!',
+        const Duration(seconds: -1): 'JWT token not yet accepted!',
+        Duration.zero: null, // valid if immediately received
+        const Duration(seconds: 1): null, // still valid
+        const Duration(seconds: 60): null, // still valid
+        const Duration(seconds: 119): null, // still valid for up to 2 minutes
+        const Duration(seconds: 120): 'JWT token expired!',
+        const Duration(seconds: 121): 'JWT token expired!',
+        const Duration(hours: 1): 'JWT token expired!',
+        const Duration(days: 1, microseconds: 100): 'JWT token expired!',
       };
 
       for (final sample in samples.entries) {
@@ -173,8 +173,8 @@ void nbfSameAsIss() {
           ServiceProvider.reset(); // discard previously seen JWT IDs
           sp.authenticate(testAssertion, currentTime: timeIssued.add(offset));
           if (sample.value != null) {
-            fail('Offset $offset from issued time: was not rejected'
-                ': was expecting "${sample.value}"');
+            fail('Offset $offset from issued time: was not rejected: '
+                ' was expecting "${sample.value}"');
           }
         } on AafException catch (e) {
           if (sample.value != null) {
@@ -187,19 +187,21 @@ void nbfSameAsIss() {
     });
 
     test('clock skew is allowed', () {
-      sp.allowedClockSkew = Duration(seconds: 30);
+      sp.allowedClockSkew = const Duration(seconds: 30);
 
       final samples = {
-        Duration(hours: -1): 'JWT token not yet accepted!',
-        Duration(seconds: -31): 'JWT token not yet accepted!',
-        Duration(seconds: -30): null, // issued time - 30 seconds clock skew
-        Duration(seconds: -29): null,
-        Duration(): null,
-        Duration(seconds: 60): null,
-        Duration(seconds: 149): null, // 119 seconds + 30 seconds clock skew
-        Duration(seconds: 150): 'JWT token expired!',
-        Duration(seconds: 151): 'JWT token expired!',
-        Duration(hours: 1): 'JWT token expired!',
+        const Duration(hours: -1): 'JWT token not yet accepted!',
+        const Duration(seconds: -31): 'JWT token not yet accepted!',
+        const Duration(seconds: -30):
+            null, // issued time - 30 seconds clock skew
+        const Duration(seconds: -29): null,
+        Duration.zero: null,
+        const Duration(seconds: 60): null,
+        const Duration(seconds: 149):
+            null, // 119 seconds + 30 seconds clock skew
+        const Duration(seconds: 150): 'JWT token expired!',
+        const Duration(seconds: 151): 'JWT token expired!',
+        const Duration(hours: 1): 'JWT token expired!',
       };
 
       for (final sample in samples.entries) {
@@ -208,8 +210,8 @@ void nbfSameAsIss() {
           ServiceProvider.reset(); // discard previously seen JWT IDs
           sp.authenticate(testAssertion, currentTime: timeIssued.add(offset));
           if (sample.value != null) {
-            fail('Offset $offset from issued time: was not rejected'
-                ': was expecting "${sample.value}"');
+            fail('Offset $offset from issued time: was not rejected:'
+                ' was expecting "${sample.value}"');
           }
         } on AafException catch (e) {
           if (sample.value != null) {
@@ -323,20 +325,22 @@ void nbfAfterIss() {
 
   test('iss < nbf:', () {
     // Note: iat, exp, nbf only have the resolution of 1 second.
-    sp.allowedClockSkew = Duration();
+    sp.allowedClockSkew = Duration.zero;
 
     final samples = {
-      Duration(hours: -1): 'JWT token not yet accepted!', // t <<< iss
-      Duration(seconds: -1): 'JWT token not yet accepted!', // t < iss
-      Duration(): 'JWT token not yet accepted!', // iss = t < nbf
-      Duration(seconds: 1): 'JWT token not yet accepted!', // iss < t < nbf
-      Duration(seconds: 59): 'JWT token not yet accepted!', // iss < t < nbf
-      Duration(seconds: 60): null, // valid: t = nbf
-      Duration(seconds: 61): null, // valid: nbf < t < exp
-      Duration(seconds: 179): null, // valid: nbf < t < exp
-      Duration(seconds: 180): 'JWT token expired!', // t = exp
-      Duration(seconds: 181): 'JWT token expired!', // exp < t
-      Duration(hours: 1): 'JWT token expired!', // exp <<< t
+      const Duration(hours: -1): 'JWT token not yet accepted!', // t <<< iss
+      const Duration(seconds: -1): 'JWT token not yet accepted!', // t < iss
+      Duration.zero: 'JWT token not yet accepted!', // iss = t < nbf
+      const Duration(seconds: 1):
+          'JWT token not yet accepted!', // iss < t < nbf
+      const Duration(seconds: 59):
+          'JWT token not yet accepted!', // iss < t < nbf
+      const Duration(seconds: 60): null, // valid: t = nbf
+      const Duration(seconds: 61): null, // valid: nbf < t < exp
+      const Duration(seconds: 179): null, // valid: nbf < t < exp
+      const Duration(seconds: 180): 'JWT token expired!', // t = exp
+      const Duration(seconds: 181): 'JWT token expired!', // exp < t
+      const Duration(hours: 1): 'JWT token expired!', // exp <<< t
     };
 
     for (final sample in samples.entries) {
@@ -345,8 +349,8 @@ void nbfAfterIss() {
         ServiceProvider.reset(); // discard previously seen JWT IDs
         sp.authenticate(testAssertion, currentTime: timeIssued.add(offset));
         if (sample.value != null) {
-          fail('Offset $offset from issued time: was not rejected'
-              ': was expecting "${sample.value}"');
+          fail('Offset $offset from issued time: was not rejected:'
+              ' was expecting "${sample.value}"');
         }
       } on AafException catch (e) {
         if (sample.value != null) {
@@ -361,7 +365,7 @@ void nbfAfterIss() {
   test('extra attributes', () {
     final sp = ServiceProvider(issuer, audience, secret);
     final attr = ClaimWithSharedToken(sp.authenticate(testAssertion,
-        currentTime: timeIssued.add(Duration(seconds: 60))));
+        currentTime: timeIssued.add(const Duration(seconds: 60))));
 
     // The underlying map of attributes has the extra values
 
@@ -388,7 +392,7 @@ void nbfBeforeIss() {
   // The expiry (exp) is 120 seconds after not-valid-before
   // (i.e. 60 seconds after issued).
 
-  final testAssertion = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+  const testAssertion = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
       'eyJhdWQiOlsiaHR0cHM6Ly9zZXJ2aWNlLXByb3ZpZGVyLmV4YW1wbGUuY29tIl0s'
       'ImV4cCI6MTU3NzI5NTA2MCwiaHR0cHM6Ly9hYWYuZWR1LmF1L2F0dHJpYnV0ZXMi'
       'OnsiYXVlZHVwZXJzb25zaGFyZWR0b2tlbiI6Im5oUnFoQ3JlZmJhMV9HR2FiY2Rl'
@@ -408,23 +412,25 @@ void nbfBeforeIss() {
       '4QD1IgsLP-jHMzc4Ras-XxwfXmuFqbV1MBOoJuKpBEw';
 
   test('nbf < iss:', () {
-    final sp = ServiceProvider(issuer, audience, secret);
-    sp.allowedClockSkew = Duration();
+    final sp = ServiceProvider(issuer, audience, secret)
+      ..allowedClockSkew = Duration.zero;
 
     // nbf < iss < exp
 
     final samples = {
-      Duration(hours: -1): 'JWT token not yet accepted!', // t <<< nbf < iss
-      Duration(seconds: -61): 'JWT token not yet accepted!', // t < nbf < iss
-      Duration(seconds: -60): null, // t = nbf < iss
-      Duration(seconds: -59): null, // nbf < t < iss
-      Duration(seconds: -1): null, // nbf < t < iss
-      Duration(): null, // nbf < t = iss
-      Duration(seconds: 1): null, // nbf < iss < t
-      Duration(seconds: 59): null, // valid: nbf < iss < t < exp
-      Duration(seconds: 60): 'JWT token expired!', // nbf < iss < t = exp
-      Duration(seconds: 61): 'JWT token expired!', // exp < t
-      Duration(hours: 1): 'JWT token expired!', // exp <<< t
+      const Duration(hours: -1):
+          'JWT token not yet accepted!', // t <<< nbf < iss
+      const Duration(seconds: -61):
+          'JWT token not yet accepted!', // t < nbf < iss
+      const Duration(seconds: -60): null, // t = nbf < iss
+      const Duration(seconds: -59): null, // nbf < t < iss
+      const Duration(seconds: -1): null, // nbf < t < iss
+      Duration.zero: null, // nbf < t = iss
+      const Duration(seconds: 1): null, // nbf < iss < t
+      const Duration(seconds: 59): null, // valid: nbf < iss < t < exp
+      const Duration(seconds: 60): 'JWT token expired!', // nbf < iss < t = exp
+      const Duration(seconds: 61): 'JWT token expired!', // exp < t
+      const Duration(hours: 1): 'JWT token expired!', // exp <<< t
     };
 
     for (final sample in samples.entries) {
@@ -433,8 +439,8 @@ void nbfBeforeIss() {
         ServiceProvider.reset(); // discard previously seen JWT IDs
         sp.authenticate(testAssertion, currentTime: timeIssued.add(offset));
         if (sample.value != null) {
-          fail('Offset $offset from issued time: was not rejected'
-              ': was expecting "${sample.value}"');
+          fail('Offset $offset from issued time: was not rejected:'
+              ' was expecting "${sample.value}"');
         }
       } on AafException catch (e) {
         if (sample.value != null) {

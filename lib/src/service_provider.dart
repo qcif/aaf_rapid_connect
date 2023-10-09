@@ -49,7 +49,7 @@ class ServiceProvider {
 
   ServiceProvider(this.issuer, this.audience, this.secret,
       {this.redirectUrl, this.name, Duration? allowedClockSkew})
-      : allowedClockSkew = allowedClockSkew ?? Duration();
+      : allowedClockSkew = allowedClockSkew ?? Duration.zero;
 
   //================================================================
   // Static members
@@ -194,10 +194,12 @@ class ServiceProvider {
             //    ' ? skew=${_fmtDur(allowedClockSkew)}');
             break;
           case JwtException.audienceNotAllowed:
-            _logJwt.fine('audienceNotAllowed: expecting "$audience"');
+            _logJwt.fine('audienceNotAllowed:'
+                ' expecting "$audience" got "${cs.audience}"');
             break;
           case JwtException.incorrectIssuer:
-            _logJwt.fine('incorrectIssuer: expecting "$issuer"');
+            _logJwt.fine(
+                'incorrectIssuer: expecting "$issuer" got "${cs.issuer}"');
             break;
         }
 
@@ -306,7 +308,6 @@ class ServiceProvider {
         _logAuthenticate.fine('success: ${aafAttr[ClaimStandard._attrMail]}');
 
         return aafAttr; // success: return result
-
       } else if (aafClaims == null) {
         throw BadAafClaim('AAF claims missing from JWT');
       } else {
@@ -402,7 +403,10 @@ class ServiceProvider {
     while (_seenJti.isNotEmpty) {
       final anyKey = _seenJti.keys.first;
       final theAssociatedTimer = _seenJti.remove(anyKey)!;
+
+      // ignore: cascade_invocations
       theAssociatedTimer.cancel();
+
       num++;
     }
 

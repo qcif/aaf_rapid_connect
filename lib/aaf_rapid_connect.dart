@@ -5,10 +5,10 @@
 ///
 /// When the AAF Rapid Connect POST callback receives an identity
 /// assertion, process it using the [ServiceProvider.authenticate]
-/// method. If the identity assertion is accepted, it will return an
-/// instance of [AafAttributes] containing the details extracted
-/// from the assertion. Otherwise, one of the subclasses of
-/// [AafException] will be thrown.
+/// method. If the identity assertion is accepted, it will return a
+/// Map<String, String> of attributes names to values, which can be used to
+/// create a [ClaimStandard] or [ClaimWithSharedToken].
+/// Otherwise, one of the subclasses of [AafException] will be thrown.
 ///
 /// For more information about AAF Rapid Connect, please see the
 /// _AAF Rapid Connect_ developer's guide at

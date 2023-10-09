@@ -53,9 +53,7 @@ void _test(String name, void Function() x, String expectedError) {
 
 void badClaim() {
   group('bad claim', () {
-    test('works by default', () {
-      _validByDefault();
-    });
+    test('works by default', _validByDefault);
 
     _test(
         'Missing JWT ID', () => _validByDefault(jwtId: null), 'Missing JWT ID');
@@ -69,7 +67,7 @@ void badClaim() {
     // Note: cannot omit 'exp', since JwtClaim always puts one in.
     _test(
         'Expiry is too large to be sensible',
-        () => _validByDefault(expiryDuration: Duration(minutes: 31)),
+        () => _validByDefault(expiryDuration: const Duration(minutes: 31)),
         'TTL is too long');
   });
 }
@@ -131,9 +129,9 @@ void badAafClaim() {
 
     test(name, () {
       // Create a correctly signed JWT from the test case.
-      // This is necessary for testing bad claims, since the signature is checked
-      // first, and any bad claims won't be detected at all if the assertion was
-      // rejected because of the signature.
+      // This is necessary for testing bad claims, since the signature is
+      // checked first, and any bad claims won't be detected at all if the
+      // assertion was rejected because of the signature.
 
       final when = DateTime.now();
 
@@ -141,7 +139,7 @@ void badAafClaim() {
           issuer: issuer,
           subject: subjectValue,
           audience: [audience],
-          expiry: when.add(Duration(seconds: 120)),
+          expiry: when.add(const Duration(seconds: 120)),
           notBefore: when,
           issuedAt: when,
           jwtId: 'unique-id',
